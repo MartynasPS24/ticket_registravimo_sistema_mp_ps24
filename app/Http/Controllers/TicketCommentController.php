@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\TicketComment;
+use App\Notifications\TicketCommentAdded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,7 +12,7 @@ class TicketCommentController extends Controller
 {
     public function store(Request $request, Ticket $ticket)
     {
-        // ticket peržiūra turi būti leidžiama (owner/admin/support)
+        // owner/admin/support gali matyti ticket
         $this->authorize('view', $ticket);
 
         // komentaruoti gali tik admin arba support
@@ -21,13 +22,20 @@ class TicketCommentController extends Controller
             'body' => ['required', 'string'],
         ]);
 
-        TicketComment::create([
+        $comment = TicketComment::create([
             'ticket_id' => $ticket->id,
             'user_id' => Auth::id(),
             'body' => $validated['body'],
         ]);
 
-        return redirect()->route('tickets.show', $ticket)
+        // siųsti pranešimą ticket savininkui (jei komentuoja ne jis pats)
+        $owner = $ticket->user;
+        if ($owner && $owner->id !== Auth::id()) {
+            $owner->notify(new TicketCommentAdded($ticket, $comment));
+        }
+
+        return redirect()
+            ->route('tickets.show', $ticket)
             ->with('success', 'Komentaras pridėtas.');
     }
 }
