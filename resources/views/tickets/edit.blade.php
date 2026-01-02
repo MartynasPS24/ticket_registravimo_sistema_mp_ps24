@@ -27,7 +27,10 @@
 
                         <div class="mb-4">
                             <label class="block mb-1">Pavadinimas</label>
-                            <input class="w-full border rounded p-2" name="title" value="{{ old('title', $ticket->title) }}" required maxlength="150">
+                            <input class="w-full border rounded p-2"
+                                   name="title"
+                                   value="{{ old('title', $ticket->title) }}"
+                                   required maxlength="150">
                         </div>
 
                         <div class="mb-4">
@@ -43,12 +46,20 @@
 
                         <div class="mb-4">
                             <label class="block mb-1">Aprašymas</label>
-                            <textarea class="w-full border rounded p-2" name="description" rows="6" required>{{ old('description', $ticket->description) }}</textarea>
+                            <textarea class="w-full border rounded p-2"
+                                      name="description"
+                                      rows="6"
+                                      required>{{ old('description', $ticket->description) }}</textarea>
                         </div>
 
-                        <div class="flex gap-2">
-                            <button class="px-4 py-2 bg-indigo-600 text-white rounded" type="submit">Išsaugoti</button>
-                            <a class="px-4 py-2 bg-gray-200 rounded" href="{{ route('tickets.show', $ticket) }}">Atgal</a>
+                        <div class="mt-4 flex gap-3">
+                            <x-primary-button type="submit">
+                                Išsaugoti
+                            </x-primary-button>
+
+                            <a href="{{ route('tickets.show', $ticket) }}" class="px-4 py-2 bg-gray-200 rounded">
+                                Atgal
+                            </a>
                         </div>
                     </form>
 

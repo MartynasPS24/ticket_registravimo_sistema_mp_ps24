@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
 
 class TicketController extends Controller
 {
@@ -53,39 +55,28 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
-        $user = Auth::user();
+        $this->authorize('view', $ticket);
 
-        // owner/admin/support gali matyti
-        if (!($user->isAdmin() || $user->isSupport() || $ticket->user_id === $user->id)) {
-            abort(403);
-        }
-
-        $ticket->load(['category', 'user']);
+        $ticket->load(['category', 'user', 'comments.user']);
 
         return view('tickets.show', compact('ticket'));
     }
 
+
+
     public function edit(Ticket $ticket)
     {
-        $user = Auth::user();
-
-        // redaguoti gali owner arba admin
-        if (!($user->isAdmin() || $ticket->user_id === $user->id)) {
-            abort(403);
-        }
+        $this->authorize('update', $ticket);
 
         $categories = Category::orderBy('name')->get();
 
         return view('tickets.edit', compact('ticket', 'categories'));
     }
 
+
     public function update(Request $request, Ticket $ticket)
     {
-        $user = Auth::user();
-
-        if (!($user->isAdmin() || $ticket->user_id === $user->id)) {
-            abort(403);
-        }
+        $this->authorize('update', $ticket);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:150'],
@@ -95,20 +86,19 @@ class TicketController extends Controller
 
         $ticket->update($validated);
 
-        return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket atnaujintas.');
+        return redirect()->route('tickets.show', $ticket)
+            ->with('success', 'Ticket atnaujintas.');
     }
+
 
     public function destroy(Ticket $ticket)
     {
-        $user = Auth::user();
-
-        // trinti gali owner arba admin
-        if (!($user->isAdmin() || $ticket->user_id === $user->id)) {
-            abort(403);
-        }
+        $this->authorize('delete', $ticket);
 
         $ticket->delete();
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket ištrintas.');
+        return redirect()->route('tickets.index')
+            ->with('success', 'Ticket ištrintas.');
     }
+
 }
