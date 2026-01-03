@@ -101,4 +101,33 @@ class TicketController extends Controller
             ->with('success', 'Ticket ištrintas.');
     }
 
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
+        $this->authorize('view', $ticket);
+
+        // statusą keičia tik admin/support
+        abort_unless(auth()->user()->isAdmin() || auth()->user()->isSupport(), 403);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:new,in_progress,done'],
+        ]);
+
+        $old = $ticket->status;
+        $new = $validated['status'];
+
+        if ($old !== $new) {
+            $ticket->update(['status' => $new]);
+
+            // email ticket savininkui
+            $owner = $ticket->user;
+            if ($owner) {
+                $owner->notify(new \App\Notifications\TicketStatusChanged($ticket, $old, $new));
+            }
+        }
+
+        return redirect()
+            ->route('tickets.show', $ticket)
+            ->with('success', 'Statusas atnaujintas.');
+    }
+
 }

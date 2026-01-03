@@ -24,7 +24,31 @@
                 <div class="p-6 space-y-3">
                     <div><b>Pavadinimas:</b> {{ $ticket->title }}</div>
                     <div><b>Kategorija:</b> {{ $ticket->category?->name }}</div>
-                    <div><b>Statusas:</b> {{ $ticket->status }}</div>
+                    
+                    <div>
+                        <b>Statusas:</b>
+                        <span class="ml-1">{{ $ticket->status }}</span>
+
+                        @if(auth()->user()->isAdmin() || auth()->user()->isSupport())
+                            <form class="mt-2" method="POST" action="{{ route('tickets.status.update', $ticket) }}">
+                                @csrf
+                                @method('PATCH')
+
+                                <div class="flex items-center gap-2">
+                                    <select class="border rounded p-2" name="status" required>
+                                        <option value="new" @selected($ticket->status === 'new')>new</option>
+                                        <option value="in_progress" @selected($ticket->status === 'in_progress')>in_progress</option>
+                                        <option value="done" @selected($ticket->status === 'done')>done</option>
+                                    </select>
+
+                                    <x-primary-button type="submit">
+                                        Keisti statusą
+                                    </x-primary-button>
+                                </div>
+                            </form>
+                        @endif
+                    </div>
+
                     <div><b>Savininkas:</b> {{ $ticket->user?->name }} ({{ $ticket->user?->email }})</div>
 
                     <div>
