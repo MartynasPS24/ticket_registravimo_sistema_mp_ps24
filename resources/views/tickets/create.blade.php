@@ -46,10 +46,16 @@
                             <textarea class="w-full border rounded p-2" name="description" rows="6" required>{{ old('description') }}</textarea>
                         </div>
 
-                        <div class="flex gap-2">
-                            <button class="px-4 py-2 bg-indigo-600 text-white rounded" type="submit">Sukurti</button>
-                            <a class="px-4 py-2 bg-gray-200 rounded" href="{{ route('tickets.index') }}">Atgal</a>
-                        </div>
+                    <div class="mt-4 flex gap-3">
+                        <x-primary-button type="submit">
+                            Sukurti
+                        </x-primary-button>
+
+                        <a class="px-4 py-2 bg-gray-200 rounded" href="{{ route('tickets.index') }}">
+                            Atgal
+                        </a>
+                    </div>
+
                     </form>
 
                 </div>

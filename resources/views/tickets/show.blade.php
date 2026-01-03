@@ -27,7 +27,16 @@
                     
                     <div>
                         <b>Statusas:</b>
-                        <span class="ml-1">{{ $ticket->status }}</span>
+
+                        <span class="ml-1">
+                            {{ match($ticket->status) {
+                                'new' => 'Naujas',
+                                'in_progress' => 'Vykdomas',
+                                'done' => 'Užbaigtas',
+                                default => $ticket->status,
+                            } }}
+                        </span>
+
 
                         @if(auth()->user()->isAdmin() || auth()->user()->isSupport())
                             <form class="mt-2" method="POST" action="{{ route('tickets.status.update', $ticket) }}">
@@ -36,9 +45,9 @@
 
                                 <div class="flex items-center gap-2">
                                     <select class="border rounded p-2" name="status" required>
-                                        <option value="new" @selected($ticket->status === 'new')>new</option>
-                                        <option value="in_progress" @selected($ticket->status === 'in_progress')>in_progress</option>
-                                        <option value="done" @selected($ticket->status === 'done')>done</option>
+                                        <option value="new" @selected($ticket->status === 'new')>Naujas</option>
+                                        <option value="in_progress" @selected($ticket->status === 'in_progress')>Vykdomas</option>
+                                        <option value="done" @selected($ticket->status === 'done')>Užbaigtas</option>
                                     </select>
 
                                     <x-primary-button type="submit">

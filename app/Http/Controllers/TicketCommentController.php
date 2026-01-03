@@ -15,7 +15,7 @@ class TicketCommentController extends Controller
         // owner/admin/support gali matyti ticket
         $this->authorize('view', $ticket);
 
-        // komentaruoti gali tik admin arba support
+        // komentuoti gali tik admin arba support
         abort_unless(Auth::user()->isAdmin() || Auth::user()->isSupport(), 403);
 
         $validated = $request->validate([
@@ -28,7 +28,7 @@ class TicketCommentController extends Controller
             'body' => $validated['body'],
         ]);
 
-        // siųsti pranešimą ticket savininkui (jei komentuoja ne jis pats)
+        // siusti pranesima ticket savininkui (jei komentuoja ne jis pats)
         $owner = $ticket->user;
         if ($owner && $owner->id !== Auth::id()) {
             $owner->notify(new TicketCommentAdded($ticket, $comment));

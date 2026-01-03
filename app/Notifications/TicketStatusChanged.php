@@ -28,8 +28,19 @@ class TicketStatusChanged extends Notification
             ->subject("Ticket #{$this->ticket->id} statusas pasikeitė")
             ->greeting("Sveiki, {$notifiable->name}!")
             ->line("Ticket „{$this->ticket->title}“ statusas pasikeitė.")
-            ->line("Buvo: {$this->oldStatus}")
-            ->line("Dabar: {$this->newStatus}")
+            ->line("Buvo: " . $this->label($this->oldStatus))
+            ->line("Dabar: " . $this->label($this->newStatus))
             ->action('Peržiūrėti ticket', url(route('tickets.show', $this->ticket)));
     }
+
+    private function label(string $status): string
+    {
+        return match ($status) {
+            'new' => 'Naujas',
+            'in_progress' => 'Vykdomas',
+            'done' => 'Užbaigtas',
+            default => $status,
+        };
+    }
+    
 }

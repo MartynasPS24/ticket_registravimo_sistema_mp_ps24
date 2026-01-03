@@ -7,9 +7,9 @@ use App\Models\User;
 
 class TicketPolicy
 {
-    /**
-     * Kas gali matyti ticket (show)
-     */
+
+    // Kas gali matyti ticket
+
     public function view(User $user, Ticket $ticket): bool
     {
         return $user->isAdmin()
@@ -17,26 +17,26 @@ class TicketPolicy
             || $ticket->user_id === $user->id;
     }
 
-    /**
-     * Kas gali kurti ticket
-     */
+
+    // kurti
+
     public function create(User $user): bool
     {
         return true; // visi prisijungę
     }
 
-    /**
-     * Kas gali redaguoti ticket
-     */
+
+    // redaguoti
+
     public function update(User $user, Ticket $ticket): bool
     {
         return $user->isAdmin()
             || $ticket->user_id === $user->id;
     }
 
-    /**
-     * Kas gali trinti ticket
-     */
+
+    // trinti
+
     public function delete(User $user, Ticket $ticket): bool
     {
         return $user->isAdmin()

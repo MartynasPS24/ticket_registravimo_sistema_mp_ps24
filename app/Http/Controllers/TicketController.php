@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class TicketController extends Controller
@@ -17,7 +18,7 @@ class TicketController extends Controller
 
         $query = Ticket::with(['category', 'user'])->latest();
 
-        // paprasta role logika: admin/support mato visus, user - tik savo
+        // admin/support mato visus, user savo
         if (!($user->isAdmin() || $user->isSupport())) {
             $query->where('user_id', $user->id);
         }
@@ -105,7 +106,7 @@ class TicketController extends Controller
     {
         $this->authorize('view', $ticket);
 
-        // statusą keičia tik admin/support
+        // statusa keicia tik admin/support
         abort_unless(auth()->user()->isAdmin() || auth()->user()->isSupport(), 403);
 
         $validated = $request->validate([
@@ -129,5 +130,27 @@ class TicketController extends Controller
             ->route('tickets.show', $ticket)
             ->with('success', 'Statusas atnaujintas.');
     }
+
+    public function activeTicketsPdf()
+    {
+        // tik admin/support
+        abort_unless(auth()->user()->isAdmin() || auth()->user()->isSupport(), 403);
+
+
+        $tickets = Ticket::with(['category', 'user'])
+            ->where('status', '!=', 'done')
+            ->latest()
+            ->get();
+
+        $generatedAt = now()->format('Y-m-d H:i');
+
+        $pdf = Pdf::loadView('reports.active_tickets_pdf', [
+            'tickets' => $tickets,
+            'generatedAt' => $generatedAt,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('aktyvus_ticketai.pdf');
+    }
+
 
 }

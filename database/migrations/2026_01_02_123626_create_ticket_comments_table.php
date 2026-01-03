@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('ticket_id')->constrained('tickets')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // kas parašė komentarą
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // kas parase komentara
 
             $table->text('body');
 

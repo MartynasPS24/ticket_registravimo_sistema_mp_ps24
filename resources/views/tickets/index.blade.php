@@ -9,6 +9,14 @@
                class="px-4 py-2 bg-indigo-600 text-white rounded">
                 Naujas ticket
             </a>
+
+            @if(auth()->user()->isAdmin() || auth()->user()->isSupport())
+                <a href="{{ route('reports.active_tickets') }}"
+                class="px-4 py-2 bg-gray-800 text-white rounded">
+                    Aktyvūs ticketai (PDF)
+                </a>
+            @endif
+
         </div>
     </x-slot>
 
@@ -44,7 +52,16 @@
                                     </a>
                                 </td>
                                 <td class="py-2">{{ $ticket->category?->name }}</td>
-                                <td class="py-2">{{ $ticket->status }}</td>
+                                
+                                <td class="py-2">
+                                    {{ match($ticket->status) {
+                                        'new' => 'Naujas',
+                                        'in_progress' => 'Vykdomas',
+                                        'done' => 'Užbaigtas',
+                                        default => $ticket->status,
+                                    } }}
+                                </td>
+
                                 <td class="py-2">
                                     <a class="text-blue-600 underline mr-2" href="{{ route('tickets.edit', $ticket) }}">Redaguoti</a>
 
